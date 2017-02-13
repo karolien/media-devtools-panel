@@ -1,66 +1,71 @@
 var connections = {};
 
-chrome.runtime.onConnect.addListener( function( port ) {
+chrome.runtime.onConnect.addListener(function(port) {
+  console.log('New connection (chrome.runtime.onConnect) from',
+              port.name,
+              port.sender.frameId,
+              port);
 
-	console.log( 'New connection (chrome.runtime.onConnect) from', port.name, port.sender.frameId, port );
+  var name = port.name;
+  if (name === 'devtools') {
+    // TODO
+  }
 
-	var name = port.name;
+  function listener(msg, sender, reply)
+  {
+    var tabId;
 
-	if( name === 'devtools' ){
-		// TODO
-	}
+    if (msg.tabId)
+      tabId = msg.tabId
+      else tabId = sender.sender.tab.id;
 
-	function listener( msg, sender, reply ) {
+    if (!connections[tabId])
+      connections[tabId] = {};
+    connections[tabId][name] = port;
 
-		var tabId;
+    if (name === 'panel') {
+      switch (msg.action) {
+        case 'get-media':
+          browser.tabs.executeScript({ file : "extract-media-info.js" })
+            .then(results => {
+              port.postMessage({
+                action : 'got-media-info',
+                value : JSON.stringify(results, null, 2)
+              });
+            })
+            .catch(err => { console.log(err.message); });
+          break;
+      }
+    }
 
-		if( msg.tabId ) tabId = msg.tabId
-		else tabId = sender.sender.tab.id;
+    if (name === 'contentScript') {
+      if (msg.action === 'page-ready') {
+        // TODO
+      }
+    }
+  }
 
-		if( !connections[ tabId ] ) connections[ tabId ] = {};
-		connections[ tabId ][ name ] = port;
+  port.onMessage.addListener(listener);
 
-		if( name === 'panel' ) {
-			switch( msg.action ) {
-				case 'get-media':
-				browser.tabs.executeScript({file: "extract-media-info.js"}).then(results => {
-					port.postMessage({action: 'got-media-info', value: JSON.stringify(results, null, 2)});
-				}).catch(err => {
-					console.log(err.message);
-				});
-				break;
-			}
-		}
+  port.onDisconnect.addListener(function() {
 
-		if( name === 'contentScript' ) {
-			if( msg.action === 'page-ready' ) {
-				// TODO
-			}
-		}
-	}
+    port.onMessage.removeListener(listener);
 
-	port.onMessage.addListener( listener );
+    console.log(name, 'disconnect (chrome.runtime.onDisconnect)');
 
-	port.onDisconnect.addListener( function() {
+    Object.keys(connections).forEach(c => {
+      if (connections[c][name] === port) {
+        connections[c][name] = null;
+        delete connections[c][name];
+      }
+      if (Object.keys(connections[c]).length === 0) {
+        connections[c] = null;
+        delete connections[c];
+      }
+    })
 
-		port.onMessage.removeListener( listener );
+  });
 
-		console.log( name, 'disconnect (chrome.runtime.onDisconnect)' );
-
-		Object.keys( connections ).forEach( c => {
-			if( connections[ c ][ name ] === port ) {
-				connections[ c ][ name ] = null;
-				delete connections[ c ][ name ];
-			}
-			if ( Object.keys( connections[ c ] ).length === 0 ) {
-				connections[ c ] = null;
-				delete connections[ c ];
-			}
-		} )
-
-
-	} );
-
-	return true;
+  return true;
 
 });

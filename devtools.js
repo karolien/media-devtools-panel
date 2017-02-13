@@ -1,25 +1,19 @@
-chrome.devtools.panels.create( "Media", "about/icon.png", "panel.html");
+chrome.devtools.panels.create("Media", "about/icon.png", "panel.html");
 
-var port = chrome.runtime.connect( null, { name: `devtools` } );
-var tabId = chrome.devtools.inspectedWindow.tabId
+var port = chrome.runtime.connect(null, { name : `devtools` });
+var tabId = chrome.devtools.inspectedWindow.tabId;
 
-function post( msg ) {
-
-	msg.tabId = tabId;
-	port.postMessage( msg );
-
+function post(msg) {
+  msg.tabId = tabId;
+  port.postMessage(msg);
 }
 
-port.onDisconnect.addListener( function() {
+port.onDisconnect.addListener(function() {
+  console.log('disconnect');
+});
 
-	console.log( 'disconnect' );
-	
-} );
-
-port.onMessage.addListener( function( msg ) {
-
-	switch( msg.action ) {
-		// TODO
-	}
-
-} );
+port.onMessage.addListener(function(msg) {
+  switch (msg.action) {
+    // TODO
+  }
+});

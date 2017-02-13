@@ -1,12 +1,12 @@
-var port = chrome.runtime.connect( { name: 'contentScript' } );
+var port = chrome.runtime.connect({ name : 'contentScript' });
 
-function post( msg ) {
-	port.postMessage( msg );
+function post(msg)
+{
+  port.postMessage(msg);
 }
 
-port.onMessage.addListener( function( msg ) {
-	switch( msg.action ) {
-		// TODO
-	}
-
-} );
+port.onMessage.addListener(function(msg) {
+  switch (msg.action) {
+    // TODO
+  }
+});

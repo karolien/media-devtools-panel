@@ -4,14 +4,15 @@
 	"version": "1.0",
 	"minimum_chrome_version": "10.0",
 	"devtools_page": "devtools.html",
-	"description": "Devtools panel that displays information about media elements on current page.",
+	"description": "Devtools panel that displays information about media",
 	"background": {
 		"scripts": [ "background.js" ]
 	},
 	"permissions": [
 		"tabs",
 		"<all_urls>",
-		"activeTab"
+		"activeTab",
+		"debugger"
 	],
 	"content_scripts": [{
 		"matches": ["<all_urls>"],
