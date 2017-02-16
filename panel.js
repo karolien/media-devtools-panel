@@ -1,5 +1,4 @@
 "use strict";
-
 var port = chrome.runtime.connect(null, { name : 'panel' });
 var tabId = chrome.devtools.inspectedWindow.tabId;
 

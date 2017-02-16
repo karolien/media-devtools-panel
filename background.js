@@ -1,10 +1,10 @@
 var connections = {};
 
 chrome.runtime.onConnect.addListener(function(port) {
-  console.log('New connection (chrome.runtime.onConnect) from',
+  /* console.log('New connection (chrome.runtime.onConnect) from',
               port.name,
               port.sender.frameId,
-              port);
+              port); */
 
   var name = port.name;
   if (name === 'devtools') {
@@ -37,12 +37,6 @@ chrome.runtime.onConnect.addListener(function(port) {
           break;
       }
     }
-
-    if (name === 'contentScript') {
-      if (msg.action === 'page-ready') {
-        // TODO
-      }
-    }
   }
 
   port.onMessage.addListener(listener);
@@ -51,7 +45,7 @@ chrome.runtime.onConnect.addListener(function(port) {
 
     port.onMessage.removeListener(listener);
 
-    console.log(name, 'disconnect (chrome.runtime.onDisconnect)');
+    // console.log(name, 'disconnect (chrome.runtime.onDisconnect)');
 
     Object.keys(connections).forEach(c => {
       if (connections[c][name] === port) {

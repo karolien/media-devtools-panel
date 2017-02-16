@@ -1,4 +1,4 @@
-chrome.devtools.panels.create("Media", "about/icon.png", "panel.html");
+chrome.devtools.panels.create("Media", "about/icon-128.png", "panel.html");
 
 var port = chrome.runtime.connect(null, { name : `devtools` });
 var tabId = chrome.devtools.inspectedWindow.tabId;
@@ -9,7 +9,7 @@ function post(msg) {
 }
 
 port.onDisconnect.addListener(function() {
-  console.log('disconnect');
+  // console.log('disconnect');
 });
 
 port.onMessage.addListener(function(msg) {
